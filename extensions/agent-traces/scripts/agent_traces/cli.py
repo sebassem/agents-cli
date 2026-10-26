@@ -101,6 +101,11 @@ def _when(iso: str) -> str:
     return iso[:19].replace("T", " ") if iso else "-"
 
 
+def _widen(since: str) -> str:
+    """Suggest a wider window, unless it's already 30 days or more."""
+    return " Try --since 30d." if parse_since(since) < timedelta(days=30) else ""
+
+
 def _tokens(i: int, o: int) -> str:
     return f"{i:,} / {o:,}"
 
@@ -171,7 +176,7 @@ class App:
 
         messages, note = self.session_messages(sid)
         if not turns and not messages:
-            raise UsageError(f"No turns or messages for session {sid} in the last {self.a.since}. Try --since 30d.")
+            raise UsageError(f"No turns or messages for session {sid} in the last {self.a.since}.{_widen(self.a.since)}")
         return turns, messages, note
 
     def session_messages(self, sid: str | None) -> tuple[list[dict], str | None]:
@@ -221,7 +226,7 @@ class App:
         return {"args": call["args"], "result": result["result"] if result else None, "note": None}
 
     def no_turns_hint(self, what: str) -> str:
-        msg = f" No {what} in this window. Try --since 30d."
+        msg = f" No {what} in this window.{_widen(self.a.since)}"
         if self.t.kind in ("cloud_run", "gke"):
             msg += (
                 f" If the service isn't named {self.t.agent_id}"
@@ -403,7 +408,7 @@ class App:
     def view_last(self) -> View:
         rows = self.turns(self.a.since, 20)
         if not rows:
-            raise UsageError(f"No turns in the last {self.a.since}. Try --since 30d.")
+            raise UsageError(f"No turns in the last {self.a.since}.{_widen(self.a.since)}")
         r = rows[0]
         meta = _meta(self.t, self.a.since)[:3] + [
             f"Trace: {r['trace_id']}",
@@ -457,7 +462,7 @@ class App:
         elif a.command == "last":
             rows = self.turns(a.since, 20)
             if not rows:
-                raise UsageError(f"No turns in the last {a.since}. Try --since 30d.")
+                raise UsageError(f"No turns in the last {a.since}.{_widen(a.since)}")
             self.emit_json(cloudtrace.get_trace(self.http, self.t.project, rows[0]["trace_id"]))
         return 0
 

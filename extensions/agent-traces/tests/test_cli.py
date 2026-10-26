@@ -99,6 +99,16 @@ def test_list_with_no_turns_on_cloud_run_suggests_service_flag(cloud_run_project
 
     assert code == 0
     assert "No turns" in out and "--service" in out
+    assert "Try --since 30d" in out
+
+
+def test_no_turns_hint_skips_widening_when_already_wide(cloud_run_project, capsys):
+    http = FakeTransport({"/traces": [{}, {}]})
+
+    code, out = run(["--since", "30d"], cwd=cloud_run_project, http=http, capsys=capsys)
+
+    assert code == 0
+    assert "No turns" in out and "Try --since" not in out
 
 
 def test_service_flag_overrides_the_service_name(cloud_run_project, capsys):
