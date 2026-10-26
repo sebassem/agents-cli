@@ -21,6 +21,8 @@ re-attached to the nearest drawn ancestor. ``all_spans=True`` draws everything.
 
 from __future__ import annotations
 
+import json
+import textwrap
 from dataclasses import dataclass, field
 from datetime import datetime
 
@@ -164,6 +166,13 @@ def _details(st: Style, node: Node) -> str:
 def render_waterfall(
     trace: dict, style: Style, *, bar_width: int = 32, all_spans: bool = False
 ) -> list[str]:
+    return [line for line, _ in waterfall_rows(trace, style, bar_width=bar_width, all_spans=all_spans)]
+
+
+def waterfall_rows(
+    trace: dict, style: Style, *, bar_width: int = 32, all_spans: bool = False
+) -> list[tuple[str, Node]]:
+    """Each drawn line with the span it stands for (the interactive view opens it)."""
     spans = [s for s in trace.get("spans", []) if s.get("startTime") and s.get("endTime")]
     if not spans:
         return []
@@ -192,5 +201,65 @@ def render_waterfall(
         dur = _fmt_duration(seconds).rjust(6)
         if style.rich and seconds >= SLOW_SECONDS:
             dur = style.yellow(dur)
-        out.append(f"{label}{pad}  {_bar(style, node, t0, total, bar_width)}  {dur}{_details(style, node)}")
+        out.append((f"{label}{pad}  {_bar(style, node, t0, total, bar_width)}  {dur}{_details(style, node)}", node))
     return out
+
+
+def _field(key: str, value: str, key_width: int, cols: int, sep: str = "  ") -> list[str]:
+    """``key  value`` with the value wrapped under itself, keeping its own line breaks."""
+    head = f"  {key.ljust(key_width)}{sep}"
+    room = max(20, cols - len(head))
+    wrapped = [
+        piece
+        for raw in (str(value).splitlines() or [""])
+        for piece in (textwrap.wrap(raw, room, drop_whitespace=False, replace_whitespace=False) or [""])
+    ]
+    return [head + wrapped[0]] + [" " * len(head) + piece for piece in wrapped[1:]]
+
+
+def span_details(node: Node, style: Style, *, cols: int = 120, tool_io: dict | None = None) -> list[str]:
+    """Key facts, a tool call's arguments and result, then every label of one span.
+
+    ``tool_io`` is ``{"args": dict | None, "result": object, "note": str | None}``
+    for tool spans (see ``cli.App.tool_io``). Long values wrap to ``cols``.
+    """
+    s = node.span
+    seconds = (node.end - node.start).total_seconds()
+    facts = [
+        ("span", s.get("spanId", "") + (f"  (parent {s['parentSpanId']})" if s.get("parentSpanId") else "")),
+        ("kind", node.kind),
+        ("start", s.get("startTime", "")),
+        ("duration", _fmt_duration(seconds)),
+    ]
+    lines = [style.bold(s.get("name", "")), ""]
+    for k, v in facts:
+        lines += _field(k, v, 8, cols)
+    if node.error:
+        lines += [line.replace(node.error, style.red(node.error), 1) for line in _field("error", node.error, 8, cols)]
+
+    if tool_io is not None:
+        lines += ["", style.bold("Arguments")]
+        args = tool_io.get("args")
+        if args:
+            key_width = max(len(k) for k in args) + 1
+            for k, v in args.items():
+                lines += _field(f"{k}:", repr(v), key_width, cols, sep=" ")
+        elif args is not None:
+            lines.append(style.dim("  (none)"))
+        if tool_io.get("result") is not None or args is not None:
+            lines += ["", style.bold("Result")]
+            result = tool_io.get("result")
+            if isinstance(result, dict) and set(result) == {"result"}:
+                result = result["result"]
+            text = result if isinstance(result, str) else json.dumps(result, indent=2, ensure_ascii=False)
+            lines += _field("", text, 0, cols) if result is not None else [style.dim("  (no result recorded)")]
+        if tool_io.get("note"):
+            lines.append(style.dim(f"  {tool_io['note']}"))
+
+    labels = s.get("labels", {})
+    if labels:
+        lines += ["", style.bold("Labels")]
+        key_width = max(len(k) for k in labels)
+        for k, v in sorted(labels.items()):
+            lines += _field(k, v, key_width, cols)
+    return lines

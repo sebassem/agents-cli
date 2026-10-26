@@ -35,7 +35,7 @@ from __future__ import annotations
 import json
 import re
 import subprocess
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 
 MANIFEST = "agents-cli-manifest.yaml"
@@ -58,12 +58,18 @@ class Target:
     session_type: str | None = None
 
     @property
-    def trace_filter(self) -> str:
-        key = "faas.name" if self.kind == "cloud_run" else "service.name"
+    def trace_filters(self) -> list[str]:
+        """Filters to try in order; the first that finds turns wins.
+
+        Cloud Run spans always carry ``faas.name`` (the resource detector sets
+        it), but ``service.name`` only when ``OTEL_SERVICE_NAME`` is set, as
+        Terraform deploys do. GKE and Agent Runtime use ``service.name``.
+        """
+        keys = ["faas.name", "service.name"] if self.kind == "cloud_run" else ["service.name"]
         # Order matters: Cloud Trace returns nothing for
         # `+service.name:X span:invoke_agent` on Agent Runtime traces, but the
         # same terms with `span:` first match (verified live on both targets).
-        return f"{TURN_FILTER} +{key}:{self.agent_id}"
+        return [f"{TURN_FILTER} +{key}:{self.agent_id}" for key in keys]
 
 
 def find_project_root(cwd: Path) -> Path | None:
@@ -124,7 +130,17 @@ def _gcloud_project() -> str | None:
     return out.stdout.strip() or None
 
 
-def resolve_target(cwd: Path) -> Target:
+def resolve_target(cwd: Path, service: str | None = None) -> Target:
+    """The deployed agent for ``cwd``; ``service`` overrides the Cloud Run / GKE service name."""
+    target = _resolve(cwd)
+    if service is None:
+        return target
+    if target.kind == "agent_runtime":
+        raise TargetError("--service applies to Cloud Run and GKE; this project deploys to Agent Runtime.")
+    return replace(target, agent_id=service, source="--service")
+
+
+def _resolve(cwd: Path) -> Target:
     root = find_project_root(cwd)
     if root is None:
         raise TargetError(

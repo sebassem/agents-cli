@@ -150,19 +150,22 @@ def chain(st: Style, agents: list[str], n: int = 3) -> str:
     return st.arrow.join(agents[:n]) + st.dim(f"{st.arrow}... (+{len(agents) - n})")
 
 
+def title_lines(st: Style, text: str, meta: list[str]) -> list[str]:
+    return [st.badge(text), st.dim(" | ".join(m for m in meta if m)), ""]
+
+
 def title(out: TextIO, st: Style, text: str, meta: list[str]) -> None:
-    print(st.badge(text), file=out)
-    print(st.dim(" | ".join(m for m in meta if m)), file=out)
-    print(file=out)
+    for line in title_lines(st, text, meta):
+        print(line, file=out)
 
 
-def table(
-    out: TextIO,
+def table_lines(
     st: Style,
     headers: list[str],
     rows: list[list[str]],
     right: set[int] | None = None,
-) -> None:
+) -> list[str]:
+    """Header, rule, then one line per row (same order as ``rows``)."""
     right = right or set()
     widths = [max([width(h)] + [width(r[i]) for r in rows]) for i, h in enumerate(headers)]
 
@@ -174,10 +177,19 @@ def table(
             parts.append(st.bold(text) if bold else text)
         return " " + "  ".join(parts).rstrip()
 
-    print(fmt(headers, bold=True), file=out)
-    print(st.dim(st.rule_char * (sum(widths) + 2 * (len(widths) - 1) + 1)), file=out)
-    for r in rows:
-        print(fmt(r), file=out)
+    rule = st.dim(st.rule_char * (sum(widths) + 2 * (len(widths) - 1) + 1))
+    return [fmt(headers, bold=True), rule] + [fmt(r) for r in rows]
+
+
+def table(
+    out: TextIO,
+    st: Style,
+    headers: list[str],
+    rows: list[list[str]],
+    right: set[int] | None = None,
+) -> None:
+    for line in table_lines(st, headers, rows, right):
+        print(line, file=out)
 
 
 def clip(text: str, max_lines: int, cols: int) -> tuple[list[str], int]:
@@ -197,8 +209,13 @@ def clip(text: str, max_lines: int, cols: int) -> tuple[list[str], int]:
     return lines[:max_lines], len(lines) - max_lines
 
 
+def hint_lines(st: Style, text: str) -> list[str]:
+    return ["", st.dim(("→ " if st.rich else "> ") + text)]
+
+
 def hint(out: TextIO, st: Style, text: str) -> None:
-    print("\n" + st.dim(("→ " if st.rich else "> ") + text), file=out)
+    for line in hint_lines(st, text):
+        print(line, file=out)
 
 
 def default_stream() -> TextIO:

@@ -78,6 +78,56 @@ def test_list_on_cloud_run_matches_the_service_and_skips_http_noise(cloud_run_pr
     assert query["filter"] == "span:invoke_agent +faas.name:traces-cr-demo"
 
 
+def test_list_on_cloud_run_falls_back_to_service_name(cloud_run_project, capsys):
+    # Terraform deploys set OTEL_SERVICE_NAME; if faas.name finds nothing, try that.
+    http = FakeTransport({"/traces": [{}, load_fixture("cloud_run_list.json")]})
+
+    code, out = run(["--format", "json"], cwd=cloud_run_project, http=http, capsys=capsys)
+
+    assert code == 0
+    assert len(json.loads(out)) == 4
+    assert [q["filter"] for _, q in http.requests] == [
+        "span:invoke_agent +faas.name:traces-cr-demo",
+        "span:invoke_agent +service.name:traces-cr-demo",
+    ]
+
+
+def test_list_with_no_turns_on_cloud_run_suggests_service_flag(cloud_run_project, capsys):
+    http = FakeTransport({"/traces": [{}, {}]})
+
+    code, out = run([], cwd=cloud_run_project, http=http, capsys=capsys)
+
+    assert code == 0
+    assert "No turns" in out and "--service" in out
+
+
+def test_service_flag_overrides_the_service_name(cloud_run_project, capsys):
+    http = FakeTransport({"/traces": load_fixture("cloud_run_list.json")})
+
+    code, out = run(["--service", "my-svc", "--format", "json"], cwd=cloud_run_project, http=http, capsys=capsys)
+
+    assert code == 0
+    assert http.requests[0][1]["filter"] == "span:invoke_agent +faas.name:my-svc"
+
+
+def test_service_flag_is_rejected_on_agent_runtime(agent_runtime_project, capsys):
+    code = main(["--service", "my-svc"], cwd=agent_runtime_project, http=FakeTransport({}))
+
+    assert code == 1
+    assert "--service" in capsys.readouterr().err
+
+
+def test_gke_matches_otel_service_name(cloud_run_project, capsys):
+    manifest = cloud_run_project / "agents-cli-manifest.yaml"
+    manifest.write_text(manifest.read_text().replace('"cloud_run"', '"gke"'))
+    http = FakeTransport({"/traces": load_fixture("cloud_run_list.json")})
+
+    code, _ = run(["--format", "json"], cwd=cloud_run_project, http=http, capsys=capsys)
+
+    assert code == 0
+    assert [q["filter"] for _, q in http.requests] == ["span:invoke_agent +service.name:traces-cr-demo"]
+
+
 def test_list_table_is_plain_ascii_when_not_a_terminal(agent_runtime_project, capsys):
     http = FakeTransport({"/traces": load_fixture("agent_runtime_list.json")})
 
