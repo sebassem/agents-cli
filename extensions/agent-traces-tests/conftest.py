@@ -12,7 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Shared fixtures: a fake Cloud Trace transport and scaffolded project dirs."""
+"""Shared fixtures: a fake Cloud Trace transport and scaffolded project dirs.
+
+The tests live outside ``extensions/agent-traces/`` because `extension add`
+copies that whole directory into the user's project.
+"""
 
 from __future__ import annotations
 
@@ -23,7 +27,7 @@ from pathlib import Path
 
 import pytest
 
-EXT_ROOT = Path(__file__).resolve().parents[1]
+EXT_ROOT = Path(__file__).resolve().parents[1] / "agent-traces"
 sys.path.insert(0, str(EXT_ROOT / "scripts"))
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -69,7 +73,7 @@ def agent_runtime_project(tmp_path: Path) -> Path:
     (tmp_path / "deployment_metadata.json").write_text(
         json.dumps(
             {
-                "remote_agent_runtime_id": "projects/demo-project/locations/us-central1/reasoningEngines/3324335473429577728",
+                "remote_agent_runtime_id": "projects/demo-project/locations/us-central1/reasoningEngines/1111111111111111111",
                 "deployment_target": "agent_runtime",
             }
         )

@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Entry point declared in agents-cli-extension.yaml (`run: [python3, scripts/traces.py]`)."""
+"""Entry point declared in agents-cli-extension.yaml (`run: [uv, run, --no-project, python, scripts/traces.py]`)."""
 
 import sys
 from pathlib import Path

@@ -36,6 +36,7 @@ import json
 import re
 import subprocess
 from dataclasses import dataclass, replace
+from enum import Enum
 from pathlib import Path
 
 MANIFEST = "agents-cli-manifest.yaml"
@@ -48,9 +49,38 @@ class TargetError(Exception):
     """The deployed agent could not be determined; the message says how to fix it."""
 
 
+class Kind(str, Enum):
+    """Where the agent runs; the value is the manifest's ``deployment_target``."""
+
+    AGENT_RUNTIME = "agent_runtime"
+    CLOUD_RUN = "cloud_run"
+    GKE = "gke"
+
+
+@dataclass(frozen=True)
+class KindInfo:
+    """What differs between deployment targets, kept in one place."""
+
+    label: str  # what ``Target.agent_id`` names, for display
+    filter_keys: tuple[str, ...]  # span labels that carry ``agent_id``, tried in order
+    sessions_on_engine: bool  # sessions live on the deployed engine itself
+    # How a service ends up under another name, for the --service hint;
+    # None means --service doesn't apply.
+    rename_hint: str | None
+
+
+KINDS = {
+    Kind.AGENT_RUNTIME: KindInfo("Engine", ("service.name",), True, None),
+    # Cloud Run spans always carry `faas.name` (the resource detector sets it),
+    # but `service.name` only when OTEL_SERVICE_NAME is set, as Terraform deploys do.
+    Kind.CLOUD_RUN: KindInfo("Service", ("faas.name", "service.name"), False, "deployed with --service-name"),
+    Kind.GKE: KindInfo("Service", ("service.name",), False, "another OTEL_SERVICE_NAME"),
+}
+
+
 @dataclass(frozen=True)
 class Target:
-    kind: str  # "agent_runtime" | "cloud_run" | "gke"
+    kind: Kind
     project: str
     region: str | None
     agent_id: str  # engine ID (Agent Runtime) or service name (Cloud Run / GKE)
@@ -58,18 +88,20 @@ class Target:
     session_type: str | None = None
 
     @property
-    def trace_filters(self) -> list[str]:
-        """Filters to try in order; the first that finds turns wins.
+    def info(self) -> KindInfo:
+        return KINDS[self.kind]
 
-        Cloud Run spans always carry ``faas.name`` (the resource detector sets
-        it), but ``service.name`` only when ``OTEL_SERVICE_NAME`` is set, as
-        Terraform deploys do. GKE and Agent Runtime use ``service.name``.
-        """
-        keys = ["faas.name", "service.name"] if self.kind == "cloud_run" else ["service.name"]
+    @property
+    def trace_filters(self) -> list[str]:
+        """Filters to try in order; the first that finds turns wins."""
+        return self.filters()
+
+    def filters(self, *terms: str) -> list[str]:
+        """``trace_filters`` narrowed by extra ``key:value`` terms (e.g. one session)."""
         # Order matters: Cloud Trace returns nothing for
         # `+service.name:X span:invoke_agent` on Agent Runtime traces, but the
         # same terms with `span:` first match (verified live on both targets).
-        return [f"{TURN_FILTER} +{key}:{self.agent_id}" for key in keys]
+        return [" ".join([TURN_FILTER, f"+{key}:{self.agent_id}", *terms]) for key in self.info.filter_keys]
 
 
 def find_project_root(cwd: Path) -> Path | None:
@@ -130,17 +162,21 @@ def _gcloud_project() -> str | None:
     return out.stdout.strip() or None
 
 
-def resolve_target(cwd: Path, service: str | None = None) -> Target:
-    """The deployed agent for ``cwd``; ``service`` overrides the Cloud Run / GKE service name."""
-    target = _resolve(cwd)
+def resolve_target(cwd: Path, service: str | None = None, project: str | None = None) -> Target:
+    """The deployed agent for ``cwd``.
+
+    ``service`` overrides the Cloud Run / GKE service name; ``project`` overrides
+    the Google Cloud project found in the project files, .env or gcloud.
+    """
+    target = _resolve(cwd, project)
     if service is None:
         return target
-    if target.kind == "agent_runtime":
+    if target.info.rename_hint is None:
         raise TargetError("--service applies to Cloud Run and GKE; this project deploys to Agent Runtime.")
     return replace(target, agent_id=service, source="--service")
 
 
-def _resolve(cwd: Path) -> Target:
+def _resolve(cwd: Path, project_override: str | None = None) -> Target:
     root = find_project_root(cwd)
     if root is None:
         raise TargetError(
@@ -153,20 +189,31 @@ def _resolve(cwd: Path) -> Target:
 
     meta_path = root / METADATA
     if meta_path.exists():
-        meta = json.loads(meta_path.read_text())
-        m = ENGINE_RE.search(meta.get("remote_agent_runtime_id") or "")
+        try:
+            meta = json.loads(meta_path.read_text())
+        except ValueError as e:
+            raise TargetError(f"{meta_path} isn't valid JSON ({e}). Re-run `agents-cli deploy`.") from e
+        engine = (meta.get("remote_agent_runtime_id") or meta.get("agent_runtime_id") or "") if isinstance(meta, dict) else ""
+        m = ENGINE_RE.search(engine)
         if m:
-            return Target("agent_runtime", m.group(1), m.group(2), m.group(3), METADATA)
+            project = m.group(1)
+            # Some deploys record the project number; Cloud Trace wants the ID
+            # (traces are listed under it), so prefer the configured ID.
+            if project_override:
+                project = project_override
+            elif project.isdigit():
+                project = _dotenv_project(root) or _gcloud_project() or project
+            return Target(Kind.AGENT_RUNTIME, project, m.group(2), m.group(3), METADATA)
 
-    if deployment_target in ("cloud_run", "gke"):
+    if deployment_target in (Kind.CLOUD_RUN, Kind.GKE):
         name = manifest.get("name")
         if not name:
             raise TargetError(f"{MANIFEST} has no `name`; can't tell which service to read.")
-        project = _dotenv_project(root) or _gcloud_project()
+        project = project_override or _dotenv_project(root) or _gcloud_project()
         if not project:
-            raise TargetError("No Google Cloud project. Set GOOGLE_CLOUD_PROJECT in .env.")
+            raise TargetError("No Google Cloud project. Set GOOGLE_CLOUD_PROJECT in .env, or pass --project.")
         return Target(
-            deployment_target,
+            Kind(deployment_target),
             project,
             manifest.get("region"),
             name,

@@ -84,32 +84,33 @@ def width(s: str) -> int:
 class Style:
     rich: bool
 
-    def _c(self, code: str, s: str) -> str:
+    def color(self, code: str, s: str) -> str:
+        """``s`` in the ANSI SGR ``code`` (e.g. "31" red), or plain when not rich."""
         return f"\033[{code}m{s}\033[0m" if self.rich and s else s
 
     def bold(self, s: str) -> str:
-        return self._c("1", s)
+        return self.color("1", s)
 
     def dim(self, s: str) -> str:
-        return self._c("2", s)
+        return self.color("2", s)
 
     def red(self, s: str) -> str:
-        return self._c("31", s)
+        return self.color("31", s)
 
     def green(self, s: str) -> str:
-        return self._c("32", s)
+        return self.color("32", s)
 
     def yellow(self, s: str) -> str:
-        return self._c("33", s)
+        return self.color("33", s)
 
     def blue(self, s: str) -> str:
-        return self._c("34", s)
+        return self.color("34", s)
 
     def magenta(self, s: str) -> str:
-        return self._c("35", s)
+        return self.color("35", s)
 
     def cyan(self, s: str) -> str:
-        return self._c("36", s)
+        return self.color("36", s)
 
     # --- symbols with ASCII fallbacks -----------------------------------
     @property
@@ -121,7 +122,7 @@ class Style:
         return "─" if self.rich else "-"
 
     def badge(self, text: str) -> str:
-        return self._c("1;97;44", f"  {text}  ") if self.rich else f"== {text} =="
+        return self.color("1;97;44", f"  {text}  ") if self.rich else f"== {text} =="
 
     def ok(self) -> str:
         return self.green("✓ ok") if self.rich else "ok"
@@ -154,11 +155,6 @@ def title_lines(st: Style, text: str, meta: list[str]) -> list[str]:
     return [st.badge(text), st.dim(" | ".join(m for m in meta if m)), ""]
 
 
-def title(out: TextIO, st: Style, text: str, meta: list[str]) -> None:
-    for line in title_lines(st, text, meta):
-        print(line, file=out)
-
-
 def table_lines(
     st: Style,
     headers: list[str],
@@ -181,17 +177,6 @@ def table_lines(
     return [fmt(headers, bold=True), rule] + [fmt(r) for r in rows]
 
 
-def table(
-    out: TextIO,
-    st: Style,
-    headers: list[str],
-    rows: list[list[str]],
-    right: set[int] | None = None,
-) -> None:
-    for line in table_lines(st, headers, rows, right):
-        print(line, file=out)
-
-
 def clip(text: str, max_lines: int, cols: int) -> tuple[list[str], int]:
     """Fit a message into at most ``max_lines`` lines of ``cols`` columns.
 
@@ -211,11 +196,6 @@ def clip(text: str, max_lines: int, cols: int) -> tuple[list[str], int]:
 
 def hint_lines(st: Style, text: str) -> list[str]:
     return ["", st.dim(("→ " if st.rich else "> ") + text)]
-
-
-def hint(out: TextIO, st: Style, text: str) -> None:
-    for line in hint_lines(st, text):
-        print(line, file=out)
 
 
 def default_stream() -> TextIO:

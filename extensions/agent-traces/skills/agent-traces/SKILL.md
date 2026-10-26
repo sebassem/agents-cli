@@ -21,7 +21,7 @@ description: Inspect what a deployed agent actually did, from Cloud Trace and it
 | `traces show <trace-id>` | the raw trace: `{traceId, spans: [{name, spanId, parentSpanId, startTime, endTime, labels}]}` |
 | `traces last` | the raw trace of the newest turn |
 
-Shared flags: `--since 30m|24h|7d` (default `7d`), `--limit N` (default 20), `--errors`, `--service <name>` (Cloud Run / GKE deployed with `--service-name`).
+Shared flags: `--since 30m|24h|7d` (default `7d`; `30d` for `session`), `--limit N` (default 20), `--errors`, `--service <name>` (Cloud Run / GKE service not named after the project), `--project <id>` (read another Google Cloud project).
 
 ## Fields
 
@@ -32,5 +32,6 @@ Shared flags: `--since 30m|24h|7d` (default `7d`), `--limit N` (default 20), `--
 ## When results are empty or partial
 
 - **No turns:** traces take about a minute to arrive; widen `--since` (e.g. `30d`). On Cloud Run / GKE, a service deployed under another name needs `--service <name>`.
+- **Session not found:** it's older than the window; pass a wider `--since` to `traces session`.
 - **`transcript_note` is set, `messages` is empty:** the project stores sessions in memory or Cloud SQL, or the session expired. Turns and spans still work; tool arguments are then unavailable (span labels like `gcp.vertex.agent.tool_call_args` hold `{}` unless the agent captures content).
-- **Exit code 1** with `x …` on stderr: not inside an agents-cli project, not deployed yet, or credentials missing (`gcloud auth application-default login`).
+- **Exit code 1** with `x …` on stderr: not inside an agents-cli project, not deployed yet, nothing found for `last` / `session`, an API error (e.g. 403: missing IAM role), or credentials missing (`gcloud auth application-default login`). **Exit code 2**: invalid arguments. An empty list (`[]`) exits 0.

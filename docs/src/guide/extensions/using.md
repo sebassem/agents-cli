@@ -54,7 +54,7 @@ An overridden or added command is tagged in `agents-cli --help` with `[↑ <exte
 | `acme/acli-extensions` | any `org/repo` on GitHub |
 | `acme/acli-extensions#soc2-deploy` | select one extension from a multi-extension repo |
 | `local@../my-extension` | a local path (for development) |
-| `<name>` | first-party shorthand — resolves to the `google/agents-cli` repo |
+| `<name>` | first-party shorthand — resolves to `extensions/<name>` in the `google/agents-cli` repo, e.g. [`agent-traces`](traces.md) |
 | `--ref <branch\|tag\|sha>` | pin a branch, tag, or commit SHA |
 
 ---

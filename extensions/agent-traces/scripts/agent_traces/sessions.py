@@ -56,7 +56,7 @@ def find_engines(http: Transport, t: Target) -> list[str]:
     """
     if not t.region:
         raise NoTranscript("No region in the project files, so the session store can't be found.")
-    if t.kind == "agent_runtime":
+    if t.info.sessions_on_engine:
         return [f"projects/{t.project}/locations/{t.region}/reasoningEngines/{t.agent_id}"]
     if t.session_type != STORED:
         raise NoTranscript(

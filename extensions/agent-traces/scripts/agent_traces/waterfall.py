@@ -146,7 +146,7 @@ def _bar(st: Style, node: Node, t0: datetime, total: float, bar_width: int) -> s
     if not st.rich:
         return "." * offset + "#" * length + "." * rest
     kind = "error" if node.error else node.kind
-    fill = st._c(BAR_COLORS.get(kind, DEFAULT_BAR), "█" * length)
+    fill = st.color(BAR_COLORS.get(kind, DEFAULT_BAR), "█" * length)
     return st.dim("·" * offset) + fill + st.dim("·" * rest)
 
 

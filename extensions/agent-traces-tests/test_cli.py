@@ -17,7 +17,9 @@
 from __future__ import annotations
 
 import json
+from datetime import datetime, timedelta
 
+from agent_traces import model
 from agent_traces.cli import main
 from conftest import FakeTransport, load_fixture
 
@@ -40,7 +42,7 @@ def test_list_json_returns_turns_of_the_deployed_engine_newest_first(agent_runti
         "381903fe77ee6bd6cde50c23d82f35c2",  # 12:53:25
         "6dda4d5436f3f10e8f4b69701e955579",  # 12:53:03
     ]
-    assert {t["session_id"] for t in turns} == {"600771126192242688"}
+    assert {t["session_id"] for t in turns} == {"222222222222222222"}
     # Values cross-checked against AgFleet's waterfall of the same trace.
     newest = turns[0]
     assert newest["duration_s"] == 5.15
@@ -48,7 +50,7 @@ def test_list_json_returns_turns_of_the_deployed_engine_newest_first(agent_runti
     # Scoped to this project's engine (exact match), agent turns only.
     path, query = http.requests[0]
     assert path == "/v1/projects/demo-project/traces"
-    assert query["filter"] == "span:invoke_agent +service.name:3324335473429577728"
+    assert query["filter"] == "span:invoke_agent +service.name:1111111111111111111"
 
 
 def test_list_on_cloud_run_matches_the_service_and_skips_http_noise(cloud_run_project, capsys):
@@ -148,7 +150,7 @@ def test_list_table_is_plain_ascii_when_not_a_terminal(agent_runtime_project, ca
     lines = out.splitlines()
     header = next(line for line in lines if "TRACE" in line)
     assert header.split() == ["STARTED", "TRACE", "SESSION", "AGENTS", "TOOLS", "TOKENS", "IN/OUT", "DURATION", "STATUS"]
-    rows = [line for line in lines if "600771126192242688" in line]
+    rows = [line for line in lines if "222222222222222222" in line]
     assert len(rows) == 4
     assert rows[0].split()[2] == "0d824994cc78412905c9f66a635cc241"
     assert rows[0].rstrip().endswith("x TypeError")
@@ -229,7 +231,7 @@ def test_last_draws_the_newest_turn(cloud_run_project, capsys):
 def test_show_needs_a_trace_id(agent_runtime_project, capsys):
     code = main(["show"], cwd=agent_runtime_project, http=FakeTransport({}))
 
-    assert code == 2
+    assert code == 1
     assert "trace ID" in capsys.readouterr().err
 
 
@@ -258,7 +260,8 @@ def test_session_shows_each_turns_messages_above_its_waterfall(cloud_run_project
     assert code == 0
     paths = [p for p, _ in http.requests]
     trace_query = next(q for p, q in http.requests if p.endswith("/traces"))
-    assert trace_query["filter"] == f"span:invoke_agent +gen_ai.conversation.id:{sid}"
+    # Scoped to this agent's service as well, so another agent's session can't leak in.
+    assert trace_query["filter"] == f"span:invoke_agent +faas.name:traces-cr-demo +gen_ai.conversation.id:{sid}"
     # Cloud Run keeps sessions in a sessions-only Agent Runtime named after the project.
     engines_path, engines_query = next((p, q) for p, q in http.requests if p.endswith("/reasoningEngines"))
     assert engines_path == "/v1beta1/projects/demo-project/locations/us-central1/reasoningEngines"
@@ -296,7 +299,7 @@ def test_session_without_stored_sessions_says_so_and_still_shows_turns(cloud_run
 
 
 def test_session_on_agent_runtime_reads_events_from_the_deployed_engine(agent_runtime_project, capsys):
-    sid = "600771126192242688"
+    sid = "222222222222222222"
     http = FakeTransport(
         {"/traces": load_fixture("agent_runtime_list.json"), "/events": {"sessionEvents": []}}
     )
@@ -305,7 +308,7 @@ def test_session_on_agent_runtime_reads_events_from_the_deployed_engine(agent_ru
 
     assert code == 0
     assert any(
-        p == f"/v1beta1/projects/demo-project/locations/us-central1/reasoningEngines/3324335473429577728/sessions/{sid}/events"
+        p == f"/v1beta1/projects/demo-project/locations/us-central1/reasoningEngines/1111111111111111111/sessions/{sid}/events"
         for p, _ in http.requests
     )
 
@@ -428,3 +431,56 @@ def test_session_missing_from_every_store_says_so_plainly(cloud_run_project, cap
     assert "was not found in the 2 session stores named traces-cr-demo" in out
     assert "{" not in out.split("Turn 1")[0]  # no raw JSON in the note
     assert out.count("Turn ") == 2
+
+
+def test_session_looks_back_30_days_by_default(cloud_run_project, capsys):
+    sid = "6349499777176043520"
+    http = FakeTransport(
+        {
+            "/traces": load_fixture("cloud_run_list.json"),
+            "/reasoningEngines": SESSION_RUNTIME,
+            "/events": load_fixture("cloud_run_session_events.json"),
+        }
+    )
+
+    code = main(["session", sid, "--format", "json"], cwd=cloud_run_project, http=http)
+
+    assert code == 0
+    query = next(q for p, q in http.requests if p.endswith("/traces"))
+    start = datetime.fromisoformat(query["startTime"].replace("Z", "+00:00"))
+    end = datetime.fromisoformat(query["endTime"].replace("Z", "+00:00"))
+    assert end - start == timedelta(days=30)
+
+
+def test_a_bare_trace_id_shows_that_trace(cloud_run_project, capsys):
+    trace_id = "1e352072b4b9a1e7b584b6156678d98a"
+    http = FakeTransport({f"/traces/{trace_id}": _trace("cloud_run_list.json", trace_id)})
+
+    code, out = run([trace_id, "--format", "json"], cwd=cloud_run_project, http=http, capsys=capsys)
+
+    assert code == 0
+    assert json.loads(out)["traceId"] == trace_id
+
+
+def test_errors_keeps_paging_past_turns_without_errors(agent_runtime_project, capsys):
+    # The failing turn is on page 2. Page 1 holds 6 turns: more than `--limit x 5`,
+    # so a scan sized by --limit would stop before reaching it.
+    traces = load_fixture("agent_runtime_list.json")["traces"]
+    failing = [t for t in traces if model.is_turn(t) and model.summarize(t)["errors"]]
+    passing = [t for t in traces if model.is_turn(t) and not model.summarize(t)["errors"]]
+    assert failing and len(passing) > 1
+    http = FakeTransport({"/traces": [{"traces": passing * 2, "nextPageToken": "p2"}, {"traces": failing}]})
+
+    code, out = run(["--errors", "--limit", "1", "--since", "30d", "--format", "json"], cwd=agent_runtime_project, http=http, capsys=capsys)
+
+    assert code == 0
+    assert [t["trace_id"] for t in json.loads(out)] == [model.summarize(failing[0])["trace_id"]]
+
+
+def test_project_flag_reads_traces_from_that_project(cloud_run_project, capsys):
+    http = FakeTransport({"/traces": load_fixture("cloud_run_list.json")})
+
+    code, _ = run(["--project", "other-project", "--format", "json"], cwd=cloud_run_project, http=http, capsys=capsys)
+
+    assert code == 0
+    assert http.requests[0][0] == "/v1/projects/other-project/traces"

@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 
 
+## [Unreleased]
+
+- **New first-party extension: `agent-traces`.** `agents-cli extension add agent-traces` adds `agents-cli traces`, which shows the turns, sessions and span waterfalls of the agent the current project deployed, read from Cloud Trace and the agent's session store. It works on Agent Runtime, Cloud Run and GKE and finds the agent from the project files.
+  - `traces` lists recent turns. `traces sessions` lists conversations, and `traces session <id>` shows each turn's messages above its waterfall. `traces show <trace-id>` and `traces last` draw one turn.
+  - `-i` opens an interactive browser. `--format json` prints complete output for scripts and coding agents, and the extension installs an `agent-traces` skill that uses it.
+  - See [Traces Extension](https://google.github.io/agents-cli/guide/extensions/traces/).
+
 ## [1.11.0] - 2026-10-20
 
 - Breaking: The `adk@<name>` shortcut has been removed. Pass the recipe's GitHub URL to `agents-cli create` instead, and browse recipes at https://github.com/google/adk-recipes.

@@ -15,7 +15,7 @@
       "faas.version": "traces-cr-demo-00002-gvz",
       "gcp.project_id": "demo-project",
       "gen_ai.main_agent.id": "urn:agent:projects-123456789012:projects:123456789012:locations:us-central1:run:services:traces-cr-demo",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "invocation",
      "spanId": "369038844664120588",
@@ -37,7 +37,7 @@
       "gen_ai.conversation.id": "4890333497908002816",
       "gen_ai.main_agent.id": "urn:agent:projects-123456789012:projects:123456789012:locations:us-central1:run:services:traces-cr-demo",
       "gen_ai.operation.name": "invoke_agent",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "invoke_agent traces_cr_demo",
      "parentSpanId": "369038844664120588",
@@ -65,7 +65,7 @@
       "gen_ai.usage.input_tokens": "190",
       "gen_ai.usage.output_tokens": "117",
       "gen_ai.usage.reasoning.output_tokens": "83",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "call_llm",
      "parentSpanId": "7172485493757779147",
@@ -99,7 +99,7 @@
       "gen_ai.usage.input_tokens": "190",
       "gen_ai.usage.output_tokens": "34",
       "pypi.package.name": "opentelemetry-instrumentation-google-genai",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "generate_content gemini-3.8-flash",
      "parentSpanId": "2241385547337389700",
@@ -125,7 +125,7 @@
       "gen_ai.tool.description": "Simulates getting the current time for a city.\n\nArgs:\n    city: The name of the city to get the current time for.\n\nReturns:\n    A string with the current time information.",
       "gen_ai.tool.name": "get_current_time",
       "gen_ai.tool.type": "FunctionTool",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "execute_tool get_current_time",
      "parentSpanId": "7172485493757779147",
@@ -151,7 +151,7 @@
       "gen_ai.tool.description": "Simulates a web search. Use it get information on weather.\n\nArgs:\n    query: A string containing the location to get weather information for.\n\nReturns:\n    A string with the simulated weather information for the queried location.",
       "gen_ai.tool.name": "get_weather",
       "gen_ai.tool.type": "FunctionTool",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "execute_tool get_weather",
      "parentSpanId": "7172485493757779147",
@@ -175,7 +175,7 @@
       "gen_ai.tool.call.id": "55174db3-a232-4b3e-baab-e12bae81721f",
       "gen_ai.tool.description": "(merged tools)",
       "gen_ai.tool.name": "(merged tools)",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "execute_tool (merged)",
      "parentSpanId": "7172485493757779147",
@@ -203,7 +203,7 @@
       "gen_ai.usage.input_tokens": "335",
       "gen_ai.usage.output_tokens": "251",
       "gen_ai.usage.reasoning.output_tokens": "231",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "call_llm",
      "parentSpanId": "7172485493757779147",
@@ -237,7 +237,7 @@
       "gen_ai.usage.input_tokens": "335",
       "gen_ai.usage.output_tokens": "20",
       "pypi.package.name": "opentelemetry-instrumentation-google-genai",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "generate_content gemini-3.8-flash",
      "parentSpanId": "12431822795033091424",
@@ -263,7 +263,7 @@
       "gen_ai.tool.description": "Simulates getting the current time for a city.\n\nArgs:\n    city: The name of the city to get the current time for.\n\nReturns:\n    A string with the current time information.",
       "gen_ai.tool.name": "get_current_time",
       "gen_ai.tool.type": "FunctionTool",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "execute_tool get_current_time",
      "parentSpanId": "7172485493757779147",
@@ -291,7 +291,7 @@
       "gen_ai.usage.input_tokens": "605",
       "gen_ai.usage.output_tokens": "144",
       "gen_ai.usage.reasoning.output_tokens": "59",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "call_llm",
      "parentSpanId": "7172485493757779147",
@@ -325,7 +325,7 @@
       "gen_ai.usage.input_tokens": "605",
       "gen_ai.usage.output_tokens": "85",
       "pypi.package.name": "opentelemetry-instrumentation-google-genai",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "generate_content gemini-3.8-flash",
      "parentSpanId": "11155880277815486244",
@@ -351,7 +351,7 @@
       "faas.version": "traces-cr-demo-00002-gvz",
       "gcp.project_id": "demo-project",
       "gen_ai.main_agent.id": "urn:agent:projects-123456789012:projects:123456789012:locations:us-central1:run:services:traces-cr-demo",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "a2a.server.routes.jsonrpc_dispatcher.JsonRpcDispatcher.handle_requests",
      "spanId": "9234163035359533592",
@@ -370,7 +370,7 @@
       "faas.version": "traces-cr-demo-00002-gvz",
       "gcp.project_id": "demo-project",
       "gen_ai.main_agent.id": "urn:agent:projects-123456789012:projects:123456789012:locations:us-central1:run:services:traces-cr-demo",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "a2a.server.routes.jsonrpc_dispatcher.JsonRpcDispatcher._process_streaming_request",
      "parentSpanId": "9234163035359533592",
@@ -390,7 +390,7 @@
       "faas.version": "traces-cr-demo-00002-gvz",
       "gcp.project_id": "demo-project",
       "gen_ai.main_agent.id": "urn:agent:projects-123456789012:projects:123456789012:locations:us-central1:run:services:traces-cr-demo",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "a2a.server.request_handlers.default_request_handler_v2.DefaultRequestHandlerV2.on_message_send_stream",
      "parentSpanId": "2412981381668703110",
@@ -410,7 +410,7 @@
       "faas.version": "traces-cr-demo-00002-gvz",
       "gcp.project_id": "demo-project",
       "gen_ai.main_agent.id": "urn:agent:projects-123456789012:projects:123456789012:locations:us-central1:run:services:traces-cr-demo",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "a2a.server.request_handlers.default_request_handler_v2.DefaultRequestHandlerV2._setup_active_task",
      "parentSpanId": "2412981381668703110",
@@ -430,7 +430,7 @@
       "faas.version": "traces-cr-demo-00002-gvz",
       "gcp.project_id": "demo-project",
       "gen_ai.main_agent.id": "urn:agent:projects-123456789012:projects:123456789012:locations:us-central1:run:services:traces-cr-demo",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "a2a.server.request_handlers.default_request_handler_v2.DefaultRequestHandlerV2._validate_task_id_match",
      "parentSpanId": "2412981381668703110",
@@ -450,7 +450,7 @@
       "faas.version": "traces-cr-demo-00002-gvz",
       "gcp.project_id": "demo-project",
       "gen_ai.main_agent.id": "urn:agent:projects-123456789012:projects:123456789012:locations:us-central1:run:services:traces-cr-demo",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "a2a.server.routes.jsonrpc_dispatcher.JsonRpcDispatcher._create_response",
      "parentSpanId": "9234163035359533592",
@@ -469,7 +469,7 @@
       "faas.version": "traces-cr-demo-00002-gvz",
       "gcp.project_id": "demo-project",
       "gen_ai.main_agent.id": "urn:agent:projects-123456789012:projects:123456789012:locations:us-central1:run:services:traces-cr-demo",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "invocation",
      "parentSpanId": "9580245563787255509",
@@ -492,7 +492,7 @@
       "gen_ai.conversation.id": "cb934d9b-6e9e-4671-a79c-94748a8f7a5c",
       "gen_ai.main_agent.id": "urn:agent:projects-123456789012:projects:123456789012:locations:us-central1:run:services:traces-cr-demo",
       "gen_ai.operation.name": "invoke_agent",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "invoke_agent traces_cr_demo",
      "parentSpanId": "7024160199547282033",
@@ -520,7 +520,7 @@
       "gen_ai.usage.input_tokens": "187",
       "gen_ai.usage.output_tokens": "55",
       "gen_ai.usage.reasoning.output_tokens": "39",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "call_llm",
      "parentSpanId": "10595014835850312171",
@@ -554,7 +554,7 @@
       "gen_ai.usage.input_tokens": "187",
       "gen_ai.usage.output_tokens": "16",
       "pypi.package.name": "opentelemetry-instrumentation-google-genai",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "generate_content gemini-3.8-flash",
      "parentSpanId": "6447705144200100584",
@@ -573,7 +573,7 @@
       "faas.version": "traces-cr-demo-00002-gvz",
       "gcp.project_id": "demo-project",
       "gen_ai.main_agent.id": "urn:agent:projects-123456789012:projects:123456789012:locations:us-central1:run:services:traces-cr-demo",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "a2a.server.tasks.task_manager.append_artifact_to_task",
      "parentSpanId": "9580245563787255509",
@@ -599,7 +599,7 @@
       "gen_ai.tool.description": "Simulates a web search. Use it get information on weather.\n\nArgs:\n    query: A string containing the location to get weather information for.\n\nReturns:\n    A string with the simulated weather information for the queried location.",
       "gen_ai.tool.name": "get_weather",
       "gen_ai.tool.type": "FunctionTool",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "execute_tool get_weather",
      "parentSpanId": "10595014835850312171",
@@ -618,7 +618,7 @@
       "faas.version": "traces-cr-demo-00002-gvz",
       "gcp.project_id": "demo-project",
       "gen_ai.main_agent.id": "urn:agent:projects-123456789012:projects:123456789012:locations:us-central1:run:services:traces-cr-demo",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "a2a.server.tasks.task_manager.append_artifact_to_task",
      "parentSpanId": "9580245563787255509",
@@ -646,7 +646,7 @@
       "gen_ai.usage.input_tokens": "253",
       "gen_ai.usage.output_tokens": "44",
       "gen_ai.usage.reasoning.output_tokens": "30",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "call_llm",
      "parentSpanId": "10595014835850312171",
@@ -680,7 +680,7 @@
       "gen_ai.usage.input_tokens": "253",
       "gen_ai.usage.output_tokens": "14",
       "pypi.package.name": "opentelemetry-instrumentation-google-genai",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "generate_content gemini-3.8-flash",
      "parentSpanId": "5228190744378732311",
@@ -699,7 +699,7 @@
       "faas.version": "traces-cr-demo-00002-gvz",
       "gcp.project_id": "demo-project",
       "gen_ai.main_agent.id": "urn:agent:projects-123456789012:projects:123456789012:locations:us-central1:run:services:traces-cr-demo",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "a2a.server.tasks.task_manager.append_artifact_to_task",
      "parentSpanId": "9580245563787255509",
@@ -724,7 +724,7 @@
       "faas.version": "traces-cr-demo-00002-gvz",
       "gcp.project_id": "demo-project",
       "gen_ai.main_agent.id": "urn:agent:projects-123456789012:projects:123456789012:locations:us-central1:run:services:traces-cr-demo",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "invocation",
      "spanId": "3074008086745347784",
@@ -746,7 +746,7 @@
       "gen_ai.conversation.id": "6349499777176043520",
       "gen_ai.main_agent.id": "urn:agent:projects-123456789012:projects:123456789012:locations:us-central1:run:services:traces-cr-demo",
       "gen_ai.operation.name": "invoke_agent",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "invoke_agent traces_cr_demo",
      "parentSpanId": "3074008086745347784",
@@ -774,7 +774,7 @@
       "gen_ai.usage.input_tokens": "188",
       "gen_ai.usage.output_tokens": "87",
       "gen_ai.usage.reasoning.output_tokens": "70",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "call_llm",
      "parentSpanId": "16359458763993796422",
@@ -808,7 +808,7 @@
       "gen_ai.usage.input_tokens": "188",
       "gen_ai.usage.output_tokens": "17",
       "pypi.package.name": "opentelemetry-instrumentation-google-genai",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "generate_content gemini-3.8-flash",
      "parentSpanId": "17840107465940796054",
@@ -834,7 +834,7 @@
       "gen_ai.tool.description": "Simulates a web search. Use it get information on weather.\n\nArgs:\n    query: A string containing the location to get weather information for.\n\nReturns:\n    A string with the simulated weather information for the queried location.",
       "gen_ai.tool.name": "get_weather",
       "gen_ai.tool.type": "FunctionTool",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "execute_tool get_weather",
      "parentSpanId": "16359458763993796422",
@@ -862,7 +862,7 @@
       "gen_ai.usage.input_tokens": "286",
       "gen_ai.usage.output_tokens": "28",
       "gen_ai.usage.reasoning.output_tokens": "13",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "call_llm",
      "parentSpanId": "16359458763993796422",
@@ -896,7 +896,7 @@
       "gen_ai.usage.input_tokens": "286",
       "gen_ai.usage.output_tokens": "15",
       "pypi.package.name": "opentelemetry-instrumentation-google-genai",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "generate_content gemini-3.8-flash",
      "parentSpanId": "12971828277274639808",
@@ -921,7 +921,7 @@
       "faas.version": "traces-cr-demo-00002-gvz",
       "gcp.project_id": "demo-project",
       "gen_ai.main_agent.id": "urn:agent:projects-123456789012:projects:123456789012:locations:us-central1:run:services:traces-cr-demo",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "invocation",
      "spanId": "12223624328098859280",
@@ -943,7 +943,7 @@
       "gen_ai.conversation.id": "6349499777176043520",
       "gen_ai.main_agent.id": "urn:agent:projects-123456789012:projects:123456789012:locations:us-central1:run:services:traces-cr-demo",
       "gen_ai.operation.name": "invoke_agent",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "invoke_agent traces_cr_demo",
      "parentSpanId": "12223624328098859280",
@@ -971,7 +971,7 @@
       "gen_ai.usage.input_tokens": "321",
       "gen_ai.usage.output_tokens": "72",
       "gen_ai.usage.reasoning.output_tokens": "53",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "call_llm",
      "parentSpanId": "12285253656397904947",
@@ -1005,7 +1005,7 @@
       "gen_ai.usage.input_tokens": "321",
       "gen_ai.usage.output_tokens": "19",
       "pypi.package.name": "opentelemetry-instrumentation-google-genai",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "generate_content gemini-3.8-flash",
      "parentSpanId": "8012572183164786352",
@@ -1031,7 +1031,7 @@
       "gen_ai.tool.description": "Simulates getting the current time for a city.\n\nArgs:\n    city: The name of the city to get the current time for.\n\nReturns:\n    A string with the current time information.",
       "gen_ai.tool.name": "get_current_time",
       "gen_ai.tool.type": "FunctionTool",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "execute_tool get_current_time",
      "parentSpanId": "12285253656397904947",
@@ -1059,7 +1059,7 @@
       "gen_ai.usage.input_tokens": "430",
       "gen_ai.usage.output_tokens": "33",
       "gen_ai.usage.reasoning.output_tokens": "6",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "call_llm",
      "parentSpanId": "12285253656397904947",
@@ -1093,7 +1093,7 @@
       "gen_ai.usage.input_tokens": "430",
       "gen_ai.usage.output_tokens": "27",
       "pypi.package.name": "opentelemetry-instrumentation-google-genai",
-      "service.instance.id": "9dee3fe8c3344e18844f6588b34cbb4b-20"
+      "service.instance.id": "00000000000000000000000000000002-20"
      },
      "name": "generate_content gemini-3.8-flash",
      "parentSpanId": "10268883384712834952",
