@@ -37,7 +37,8 @@ class FakeTransport:
     """Answers GETs from canned responses; records every request.
 
     ``routes`` maps a URL path suffix to either a response dict or a list of
-    response dicts (served in order, for pagination).
+    response dicts (served in order, for pagination). A response that is an
+    exception is raised instead (e.g. ``ApiError(..., status=404)``).
     """
 
     def __init__(self, routes: dict[str, object]):
@@ -51,7 +52,9 @@ class FakeTransport:
         for suffix, resp in self.routes.items():
             if parsed.path.endswith(suffix):
                 if isinstance(resp, list):
-                    return resp.pop(0) if resp else {}
+                    resp = resp.pop(0) if resp else {}
+                if isinstance(resp, Exception):
+                    raise resp
                 return resp
         raise AssertionError(f"unexpected request: {url}")
 

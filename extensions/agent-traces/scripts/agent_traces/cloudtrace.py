@@ -37,6 +37,10 @@ MAX_PAGES = 100
 class ApiError(Exception):
     """A Google API call failed; the message is safe to show the user."""
 
+    def __init__(self, message: str, status: int | None = None):
+        super().__init__(message)
+        self.status = status
+
 
 class Transport(Protocol):
     def get_json(self, url: str) -> dict: ...
@@ -74,8 +78,13 @@ class GoogleTransport:
             with urllib.request.urlopen(req, timeout=60) as resp:
                 return json.loads(resp.read())
         except urllib.error.HTTPError as e:
-            body = e.read().decode(errors="replace")[:300]
-            raise ApiError(f"Google API error {e.code}: {body}") from e
+            body = e.read().decode(errors="replace")
+            try:
+                # Google APIs explain themselves in error.message; show that, not the JSON.
+                detail = json.loads(body)["error"]["message"]
+            except (ValueError, KeyError, TypeError):
+                detail = body[:300]
+            raise ApiError(f"Google API error {e.code}: {detail}", status=e.code) from e
         except urllib.error.URLError as e:
             raise ApiError(f"Network error: {e.reason}") from e
 

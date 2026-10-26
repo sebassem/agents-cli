@@ -367,3 +367,54 @@ def test_session_full_shows_every_line(cloud_run_project, capsys):
     assert code == 0
     assert all(f"Paragraph {n} of the forecast." in out for n in range(1, 13))
     assert "more lines" not in out
+
+
+# GKE runs 2 replicas; each creates the session store at startup if none exists,
+# so two stores can share the project's display name (seen live). Sessions land
+# in whichever store the pod that served them created.
+TWO_STORES = {
+    "reasoningEngines": [
+        {"name": "projects/123456789012/locations/us-central1/reasoningEngines/111", "displayName": "traces-cr-demo"},
+        {"name": "projects/123456789012/locations/us-central1/reasoningEngines/222", "displayName": "traces-cr-demo"},
+    ]
+}
+
+
+def test_session_tries_every_store_with_the_project_name(cloud_run_project, capsys):
+    from agent_traces.cloudtrace import ApiError
+
+    sid = "6349499777176043520"
+    http = FakeTransport(
+        {
+            "/traces": load_fixture("cloud_run_list.json"),
+            "/reasoningEngines": TWO_STORES,
+            f"/reasoningEngines/111/sessions/{sid}/events": ApiError("Session not found.", status=404),
+            f"/reasoningEngines/222/sessions/{sid}/events": load_fixture("cloud_run_session_events.json"),
+        }
+    )
+
+    code, out = run(["session", sid, "--since", "30d"], cwd=cloud_run_project, http=http, capsys=capsys)
+
+    assert code == 0
+    assert "user> What's the weather in San Francisco?" in out
+    assert "Couldn't read" not in out
+
+
+def test_session_missing_from_every_store_says_so_plainly(cloud_run_project, capsys):
+    from agent_traces.cloudtrace import ApiError
+
+    sid = "6349499777176043520"
+    http = FakeTransport(
+        {
+            "/traces": load_fixture("cloud_run_list.json"),
+            "/reasoningEngines": TWO_STORES,
+            "/events": ApiError('Google API error 404: {"error": {"code": 404}}', status=404),
+        }
+    )
+
+    code, out = run(["session", sid, "--since", "30d"], cwd=cloud_run_project, http=http, capsys=capsys)
+
+    assert code == 0
+    assert "was not found in the 2 session stores named traces-cr-demo" in out
+    assert "{" not in out.split("Turn 1")[0]  # no raw JSON in the note
+    assert out.count("Turn ") == 2

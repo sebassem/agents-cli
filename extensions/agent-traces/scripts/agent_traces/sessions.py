@@ -29,7 +29,7 @@ from __future__ import annotations
 import json
 import urllib.parse
 
-from agent_traces.cloudtrace import Transport
+from agent_traces.cloudtrace import ApiError, Transport
 from agent_traces.target import Target
 
 API = "https://{region}-aiplatform.googleapis.com/v1beta1"
@@ -46,12 +46,18 @@ def _engines_url(project: str, region: str) -> str:
     return f"{API.format(region=region)}/projects/{project}/locations/{region}/reasoningEngines"
 
 
-def find_engine(http: Transport, t: Target) -> str:
-    """Resource name of the engine that stores this agent's sessions."""
+def find_engines(http: Transport, t: Target) -> list[str]:
+    """Resource names of the engines that may hold this agent's sessions.
+
+    Usually one. But the Cloud Run / GKE app creates its session store at
+    startup when none exists, so replicas starting together can each create
+    one with the same display name (seen live on GKE with 2 replicas); a
+    session then lives in whichever store its pod created.
+    """
     if not t.region:
         raise NoTranscript("No region in the project files, so the session store can't be found.")
     if t.kind == "agent_runtime":
-        return f"projects/{t.project}/locations/{t.region}/reasoningEngines/{t.agent_id}"
+        return [f"projects/{t.project}/locations/{t.region}/reasoningEngines/{t.agent_id}"]
     if t.session_type != STORED:
         raise NoTranscript(
             f"Sessions are stored in {t.session_type or 'an unknown store'}, so there is no transcript; "
@@ -61,7 +67,20 @@ def find_engine(http: Transport, t: Target) -> str:
     engines = http.get_json(f"{_engines_url(t.project, t.region)}?{query}").get("reasoningEngines", [])
     if not engines:
         raise NoTranscript(f"No session store named {t.agent_id} in {t.region}, so there is no transcript.")
-    return engines[0]["name"]
+    return [e["name"] for e in engines]
+
+
+def read_events(http: Transport, t: Target, session_id: str) -> list[dict]:
+    """The session's events from whichever store has it."""
+    engines = find_engines(http, t)
+    for engine in engines:
+        try:
+            return list_events(http, engine, session_id, t.region)
+        except ApiError as e:
+            if e.status != 404:
+                raise
+    stores = "the session store" if len(engines) == 1 else f"the {len(engines)} session stores named {t.agent_id}"
+    raise NoTranscript(f"Session {session_id} was not found in {stores} (it may have expired or been deleted).")
 
 
 def list_events(http: Transport, engine: str, session_id: str, region: str) -> list[dict]:

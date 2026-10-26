@@ -182,8 +182,7 @@ class App:
             note = None
             messages: list[dict] = []
             try:
-                engine = sessions.find_engine(self.http, self.t)
-                messages = sessions.to_messages(sessions.list_events(self.http, engine, sid, self.t.region))
+                messages = sessions.to_messages(sessions.read_events(self.http, self.t, sid))
             except sessions.NoTranscript as e:
                 note = str(e)
             except cloudtrace.ApiError as e:
