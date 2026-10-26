@@ -105,6 +105,7 @@ nav:
         - Using Extensions: guide/extensions/using.md
         - Authoring Extensions: guide/extensions/authoring.md
         - First-party frameworks: guide/extensions/first-party.md
+        - Traces (agent-traces): guide/extensions/traces.md
     - Evaluation:
       - Evaluation Guide: guide/evaluation.md
     - Deployment & Operations:
