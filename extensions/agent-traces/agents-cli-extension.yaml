@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/google/agents-cli/main/schemas/agents-cli-extension-v1alpha1.schema.json
+schema: agents-cli-extension/v1alpha1
+name: agent-traces
+description: >-
+  `agents-cli traces`: Cloud Trace traces, sessions and span waterfalls of the
+  agent this project deployed (Agent Runtime, Cloud Run or GKE). Standard
+  library only; no extra binaries.
+requires:
+  agents_cli: ">=1.11,<2"
+  on_incompatible: warn
+commands:
+  add:
+    traces:
+      run: ["python3", "scripts/traces.py"]
+      description: >-
+        Recent turns of the deployed agent; `sessions`, `session <id>`,
+        `show <trace-id>`, `last`. Add --format json for coding agents.

@@ -1,0 +1,152 @@
+{
+ "sessionEvents": [
+  {
+   "actions": {},
+   "author": "user",
+   "content": {
+    "parts": [
+     {
+      "text": "What's the weather in San Francisco?"
+     }
+    ],
+    "role": "user"
+   },
+   "invocationId": "e-d285358b-af8c-4940-97d6-b4295e17a314",
+   "name": "projects/123456789012/locations/us-central1/reasoningEngines/4119177651829080064/sessions/6349499777176043520/events/5743721084188884992",
+   "timestamp": "2026-10-25T15:05:29.284124Z"
+  },
+  {
+   "actions": {},
+   "author": "traces_cr_demo",
+   "content": {
+    "parts": [
+     {
+      "functionCall": {
+       "args": {
+        "query": "San Francisco"
+       },
+       "id": "call_775764",
+       "name": "get_weather"
+      },
+      "thoughtSignature": "AY89a18kf7RTGk15ImFnnN/1oMSv/xY3B7bzxRMuvVajvEuZnidlFuk7PpeBC8ujTRPxcB/At/fxGF1w2u08BJ6XakIqOj0P/gYpCUjikxWQ/T/p8Fv79SCdr8u7SqFc9uklTeIYmkqzXPqN0MZ2fDhuEzF7eXtsPz9cxz7dsFeZEPJWn/tvknZH9k0UPq4efOjWdFi5z/qMNu4zXdIdCX+lWFaCy3B1BgWfmVVPuKFWcquZteVC6wnwrxxV9ecdwHDeVLPuWMxC1rFD4Yytk1ARuGJ2z0UgZ96VPbYdaJbfLJfWOEOoVpBluzJEnggcPf5J7MaYkxdE5PZX5dH0E15Naefq1igpvX5yi3DaVsLz9mFiPD0wKDq8OFpMk3XCmWTbcs+lhYcep0NEgmaSesRnKck2e6bAD6Yykqj3DknVX+xFgEzeiSTZKrQ+ATeL7MVWv2jLNrHMXVPOAyCxN9n52agkCwLY"
+     }
+    ],
+    "role": "model"
+   },
+   "invocationId": "e-d285358b-af8c-4940-97d6-b4295e17a314",
+   "name": "projects/123456789012/locations/us-central1/reasoningEngines/4119177651829080064/sessions/6349499777176043520/events/213300741777915904",
+   "timestamp": "2026-10-25T15:05:29.535829Z"
+  },
+  {
+   "actions": {},
+   "author": "traces_cr_demo",
+   "content": {
+    "parts": [
+     {
+      "functionResponse": {
+       "id": "call_775764",
+       "name": "get_weather",
+       "response": {
+        "result": "It's 60 degrees and foggy."
+       }
+      }
+     }
+    ],
+    "role": "user"
+   },
+   "invocationId": "e-d285358b-af8c-4940-97d6-b4295e17a314",
+   "name": "projects/123456789012/locations/us-central1/reasoningEngines/4119177651829080064/sessions/6349499777176043520/events/7867168308494073856",
+   "timestamp": "2026-10-25T15:05:31.390726Z"
+  },
+  {
+   "actions": {},
+   "author": "traces_cr_demo",
+   "content": {
+    "parts": [
+     {
+      "text": "The weather in San Francisco is currently 60\u00b0F and foggy.",
+      "thoughtSignature": "AY89a1+rPTEnxgUPyVQO56PrH9yeda6UaFOVfW77KVBKPY3bVT1nDZLPQ6qOrwNhyHjI/JgK+RjWwJv8/a9G7BPkbt7htoCoNgvFwXTYYdhfoyu+cbfbmbhmOzf30Fui95vcgae+dItRFJ0GNcHIxcbtYMV5xrqSnalz82Rl/jkzpE1M18VKtoQNqPCFLkBBvCT1h6d2eLho"
+     }
+    ],
+    "role": "model"
+   },
+   "invocationId": "e-d285358b-af8c-4940-97d6-b4295e17a314",
+   "name": "projects/123456789012/locations/us-central1/reasoningEngines/4119177651829080064/sessions/6349499777176043520/events/8810672430428192768",
+   "timestamp": "2026-10-25T15:05:31.500932Z"
+  },
+  {
+   "actions": {},
+   "author": "user",
+   "content": {
+    "parts": [
+     {
+      "text": "And what time is it there?"
+     }
+    ],
+    "role": "user"
+   },
+   "invocationId": "e-6753fbe1-872f-4c4e-a5ec-75b2b4090861",
+   "name": "projects/123456789012/locations/us-central1/reasoningEngines/4119177651829080064/sessions/6349499777176043520/events/1562128830175379456",
+   "timestamp": "2026-10-25T15:05:40.796732Z"
+  },
+  {
+   "actions": {},
+   "author": "traces_cr_demo",
+   "content": {
+    "parts": [
+     {
+      "functionCall": {
+       "args": {
+        "query": "San Francisco"
+       },
+       "id": "call_727839",
+       "name": "get_current_time"
+      },
+      "thoughtSignature": "AY89a1/wEa1OQBhcqicryYN3o0ec9IFCmxkJMTTSDJ05Q2aPBptLnSbaBxJjnXYiUnbPBLY7/FUS8zpKPT0fhZwTVI5Nlk/Lh7vYtjchZII2Zmm1UWjfVWB6WavT9APMTvfJjUK+N7OQshbz5J3mahX7t95kYaf94fgkjQHQBkPyWkl2kTm787CHTdJ1m0E7cUk7X6HCx9mlnWR7CgPqKNwTaAh+TLxYvDdW9F5zLLw0B0GuXr/7zjr1e1J73av5/14Eq+QuiR+t0dkeKD1Xm7X+sr6hQy9ivcIkUXetVCdUKKLRHdKZPFeFyu2+xqLR25+TynsIOxbyNKJPbWSGxJCKzOvet1Go3Cu+F7wUs/9cETy2SIcojK0EF0IKj2ukvbDMIX4s"
+     }
+    ],
+    "role": "model"
+   },
+   "invocationId": "e-6753fbe1-872f-4c4e-a5ec-75b2b4090861",
+   "name": "projects/123456789012/locations/us-central1/reasoningEngines/4119177651829080064/sessions/6349499777176043520/events/1100509868369903616",
+   "timestamp": "2026-10-25T15:05:40.901341Z"
+  },
+  {
+   "actions": {},
+   "author": "traces_cr_demo",
+   "content": {
+    "parts": [
+     {
+      "functionResponse": {
+       "id": "call_727839",
+       "name": "get_current_time",
+       "response": {
+        "result": "The current time for query San Francisco is 2026-10-25 08:05:42 PDT-0700"
+       }
+      }
+     }
+    ],
+    "role": "user"
+   },
+   "invocationId": "e-6753fbe1-872f-4c4e-a5ec-75b2b4090861",
+   "name": "projects/123456789012/locations/us-central1/reasoningEngines/4119177651829080064/sessions/6349499777176043520/events/2122826983783006208",
+   "timestamp": "2026-10-25T15:05:42.484503Z"
+  },
+  {
+   "actions": {},
+   "author": "traces_cr_demo",
+   "content": {
+    "parts": [
+     {
+      "text": "The current time in San Francisco is 8:05 AM PDT (on October 25, 2026).",
+      "thoughtSignature": "AY89a198t2PuFh4Xa5SQEJ42CDRB6bfMyjpT7HLTxpIwqx1aD/+2Q18OTMgJwPjEQ9zPJ5oI/jxqcE07Zyt+/6yvRil5fC6Gqj8nc0BjvdFvt1s3ilrH4D7nT0wiyZXVu/0zhUlApfteXY058pR6gstSsOvBxoM="
+     }
+    ],
+    "role": "model"
+   },
+   "invocationId": "e-6753fbe1-872f-4c4e-a5ec-75b2b4090861",
+   "name": "projects/123456789012/locations/us-central1/reasoningEngines/4119177651829080064/sessions/6349499777176043520/events/2527025050339508224",
+   "timestamp": "2026-10-25T15:05:42.609571Z"
+  }
+ ]
+}
