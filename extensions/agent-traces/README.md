@@ -30,14 +30,15 @@ Full reference: the [Traces guide](https://google.github.io/agents-cli/guide/ext
 | `scripts/agent_traces/view.py` | the lines every command shows (printed, or browsed) |
 | `scripts/agent_traces/browse.py`, `tui.py` | interactive browser: navigation model, curses front end |
 | `skills/agent-traces/SKILL.md` | coding-agent skill, installed into `.agents/skills/` |
+| `tests/` | offline tests (see Development) |
 
 ## Development
 
 ```bash
-uv run --with pytest pytest extensions/agent-traces-tests -q
+uv run --with pytest pytest extensions/agent-traces/tests -q
 ```
 
-The tests live in `extensions/agent-traces-tests/`, outside this folder, because `extension add` copies this whole folder into the user's project. They run offline against trimmed real API responses in `fixtures/`: project renamed to `demo-project`, resource IDs replaced, hosts and message content removed except the demo conversation. `test_extension.py` checks the manifest with agents-cli's own parser, so it needs the repo environment (it's skipped elsewhere). To try local changes in a deployed project:
+Tests run offline against trimmed real API responses in `tests/fixtures/`: project renamed to `demo-project`, resource IDs replaced, hosts and message content removed except the demo conversation. `test_extension.py` checks the manifest with agents-cli's own parser, so it needs the repo environment (it's skipped elsewhere). To try local changes in a deployed project:
 
 ```bash
 agents-cli extension add local@/path/to/agents-cli/extensions/agent-traces
